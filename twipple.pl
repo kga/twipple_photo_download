@@ -61,16 +61,21 @@ sub store {
             my $dt = $strp->parse_datetime($date);
 
             my $uri = $base . $photo_id;
+            my $file = $dir->child($dt->ymd('-') . '-' . $dt->hms('-') . '_' . $photo_id . '.jpg');
 
-            infof '%s %s', $dt->datetime, $uri;
+            if (-e $file) {
+                infof 'exist %s, skip', $file;
+            } else {
+                infof '%s %s -> %s', $dt->datetime, $uri, $file->basename;
 
-            my $fres = $f->get($uri);
+                my $fres = $f->get($uri);
 
-            if ($fres->is_success) {
-                my $fh = $dir->child($dt->ymd('-') . '-' . $dt->hms('-') . '_' . $photo_id . '.jpg')->openw;
-                binmode $fh;
-                print $fh $fres->body;
-                close $fh;
+                if ($fres->is_success) {
+                    my $fh = $file->openw;
+                    binmode $fh;
+                    print $fh $fres->body;
+                    close $fh;
+                }
             }
         });
 }
