@@ -38,7 +38,7 @@ store($res);
 while (my $link = $mech->next_link()) {
     sleep 5;
     my ($n) = ($link =~ m!/(\d+)!);
-    say $link;
+    infof $link;
     my $res = $mech->get($link);
     store($res, $n);
 }
